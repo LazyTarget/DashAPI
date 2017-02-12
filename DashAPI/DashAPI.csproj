@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\DashOAuthClient.cs" />
+    <Compile Include="DashChassisApi.cs" />
+    <Compile Include="Interfaces\IDashChassisApi.cs" />
     <Compile Include="Models\Alert.cs" />
     <Compile Include="Models\BumperSticker.cs" />
     <Compile Include="Models\Enums.cs" />
@@ -70,10 +73,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Auth\" />
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
