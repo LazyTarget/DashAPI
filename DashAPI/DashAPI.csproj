@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="Auth\DashOAuthClient.cs" />
     <Compile Include="DashChassisApi.cs" />
+    <Compile Include="Helpers\CommonHelpers.cs" />
+    <Compile Include="Helpers\TimeSpanJsonConverter.cs" />
     <Compile Include="Interfaces\IDashChassisApi.cs" />
     <Compile Include="Helpers\JsonNetSerializer.cs" />
     <Compile Include="Models\Alert.cs" />

@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace DashAPI.Models
 {
@@ -8,6 +9,7 @@ namespace DashAPI.Models
         public string State { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public DateTime TimeRecorded { get; set; }
+        [JsonProperty("date")]
+        public DateTime TimeCaptured { get; set; }
     }
 }

@@ -107,7 +107,31 @@ namespace DashAPI
             return result;
         }
 
+        public IEnumerable<Trip> GetTrips(DateTime? startTime = null, DateTime? endTime = null, bool? paged = null)
+        {
+            throw new NotImplementedException();
+        }
 
+        public IEnumerable<RoutePoint> GetRoute(string tripId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stats GetStats(DateTime? startTime = null, DateTime? endTime = null, bool? paged = null)
+        {
+            var endpoint = Endpoints.StatsEndpoint;
+            var request = CreateRequest(endpoint, Method.GET);
+            if (startTime.HasValue)
+                request.AddQueryParameter("startTime", startTime.Value.ToUnixTime().ToString());
+            if (endTime.HasValue)
+                request.AddQueryParameter("endTime", endTime.Value.ToUnixTime().ToString());
+            if (paged.HasValue)
+                request.AddQueryParameter("paged", paged.Value.ToString());
+
+            var response = Send<Stats>(request);
+            var result = response.Data;
+            return result;
+        }
 
 
         public static class Endpoints

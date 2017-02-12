@@ -1,11 +1,16 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace DashAPI.Models
 {
     public class Trip
     {
         public string Id { get; set; }
+
+        [JsonProperty("dateStart")]
         public DateTime TimeStart { get; set; }
+
+        [JsonProperty("dateEnd")]
         public DateTime TimeEnd { get; set; }
         public string VehicleId { get; set; }
         public string StartAddress { get; set; }
