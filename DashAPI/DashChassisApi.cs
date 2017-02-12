@@ -18,6 +18,7 @@ namespace DashAPI
 {
     public class DashChassisApi : IDashChassisApi
     {
+        private readonly string _accessToken;
         private readonly IRestClient _client;
         private readonly JsonNetSerializer _jsonNetSerializer;
 
@@ -26,25 +27,31 @@ namespace DashAPI
             if (string.IsNullOrWhiteSpace(accessToken))
                 throw new ArgumentNullException(nameof(accessToken));
 
-            _client = new RestClient(Endpoints.UserEndpoint.BaseUri);
-            _client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(accessToken, "Bearer");
-            RegisterHandlers();
+            _accessToken = accessToken;
+            _client = CreateClient(Endpoints.UserEndpoint.BaseUri);
         }
 
-        private void RegisterHandlers()
+        private void RegisterHandlers(IRestClient client)
         {
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.Converters.Add(new StringEnumConverter());
 
             var serializer = JsonSerializer.Create(jsonSettings);
             var jsonHandler = new JsonNetSerializer(serializer);
-            _client.AddHandler("application/json", jsonHandler);
-            _client.AddHandler("text/json", jsonHandler);
-            _client.AddHandler("text/x-json", jsonHandler);
-            _client.AddHandler("text/javascript", jsonHandler);
-            _client.AddHandler("*+json", jsonHandler);
+            client.AddHandler("application/json", jsonHandler);
+            client.AddHandler("text/json", jsonHandler);
+            client.AddHandler("text/x-json", jsonHandler);
+            client.AddHandler("text/javascript", jsonHandler);
+            client.AddHandler("*+json", jsonHandler);
         }
 
+        protected IRestClient CreateClient(string baseUri)
+        {
+            var client = new RestClient(baseUri);
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(_accessToken, "Bearer");
+            RegisterHandlers(client);
+            return client;
+        }
 
         protected virtual IRestRequest CreateRequest(Endpoint endpoint, Method method)
         {
@@ -61,14 +68,14 @@ namespace DashAPI
 
         }
 
-        private IRestResponse<T> Send<T>(IRestRequest request)
+        protected virtual IRestResponse<T> Send<T>(IRestClient client, IRestRequest request)
             where T : new()
         {
             try
             {
-                BeforeRequest(_client, request);
+                BeforeRequest(client, request);
 
-                var response = _client.Execute<T>(request);
+                var response = client.Execute<T>(request);
                 if (response.Content.IsEmpty() ||
                     (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created))
                 {
@@ -79,7 +86,7 @@ namespace DashAPI
                     throw response.ErrorException;
                 }
 
-                AfterRequest(_client, response);
+                AfterRequest(client, response);
                 return response;
             }
             catch (Exception ex)
@@ -102,14 +109,65 @@ namespace DashAPI
         {
             var endpoint = Endpoints.UserEndpoint;
             var request = CreateRequest(endpoint, Method.GET);
-            var response = Send<User>(request);
+            var response = Send<User>(_client, request);
             var result = response.Data;
             return result;
         }
 
+
         public IEnumerable<Trip> GetTrips(DateTime? startTime = null, DateTime? endTime = null, bool? paged = null)
         {
-            throw new NotImplementedException();
+            var result = GetTrips(startTime, endTime, paged, false);
+            return result;
+        }
+
+
+        public IEnumerable<Trip> GetTrips(DateTime? startTime, DateTime? endTime, bool? paged, bool queryAll)
+        {
+            var endpoint = Endpoints.TripsEndpoint;
+            var request = CreateRequest(endpoint, Method.GET);
+            if (startTime.HasValue)
+                request.AddQueryParameter("startTime", startTime.Value.ToUnixTime().ToString());
+            if (endTime.HasValue)
+                request.AddQueryParameter("endTime", endTime.Value.ToUnixTime().ToString());
+            if (paged.HasValue)
+                request.AddQueryParameter("paged", paged.Value.ToString());
+
+            IRestClient client = _client;
+            var shouldGetNext = true;
+            while (shouldGetNext)
+            {
+                var response = Send<PageResult<Trip>>(client, request);
+                var pageResult = response.Data;
+                if (pageResult != null)
+                {
+                    if (pageResult.Result != null)
+                    {
+                        // Yield return result
+                        foreach (var trip in pageResult.Result)
+                        {
+                            yield return trip;
+                        }
+                    }
+
+
+                    if (!string.IsNullOrWhiteSpace(pageResult.NextUrl) && queryAll)
+                    {
+                        client = CreateClient(pageResult.NextUrl);
+                        request.Resource = "";
+                    }
+                    else
+                    {
+                        // No more pages...
+                        shouldGetNext = false;
+                    }
+                }
+                else
+                {
+                    // Empty page...
+                    shouldGetNext = false;
+                }
+            }
         }
 
         public IEnumerable<RoutePoint> GetRoute(string tripId)
@@ -128,7 +186,7 @@ namespace DashAPI
             if (paged.HasValue)
                 request.AddQueryParameter("paged", paged.Value.ToString());
 
-            var response = Send<Stats>(request);
+            var response = Send<Stats>(_client, request);
             var result = response.Data;
             return result;
         }
