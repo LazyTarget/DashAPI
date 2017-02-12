@@ -8,7 +8,7 @@ namespace DashAPI.Tests
         [TestMethod]
         public void GetUser()
         {
-            var accessToken = "gKfK556-r0llM-SKiSqozN7gYHd6G1mwtvKO2eVzao0mssfaH16YARAm61k0C1aGsNjoQevMe2U-7eDWO6t7UzLJGxKJx41lJ53tIyb0k9OWUpq9m9WH4A";
+            var accessToken = System.Configuration.ConfigurationManager.AppSettings.Get("AccessToken");
             var dashApi = new DashChassisApi(accessToken);
             var user = dashApi.GetUser();
 
