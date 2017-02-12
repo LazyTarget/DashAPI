@@ -4,8 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DashAPI.Helpers;
 using DashAPI.Interfaces;
 using DashAPI.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OAuth2.Client;
 using OAuth2.Infrastructure;
 using RestSharp;
@@ -16,19 +19,38 @@ namespace DashAPI
     public class DashChassisApi : IDashChassisApi
     {
         private readonly IRestClient _client;
+        private readonly JsonNetSerializer _jsonNetSerializer;
 
         public DashChassisApi(string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken))
                 throw new ArgumentNullException(nameof(accessToken));
 
-            _client = new RestClient();
+            _client = new RestClient(Endpoints.UserEndpoint.BaseUri);
             _client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(accessToken, "Bearer");
+            RegisterHandlers();
         }
+
+        private void RegisterHandlers()
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new StringEnumConverter());
+
+            var serializer = JsonSerializer.Create(jsonSettings);
+            var jsonHandler = new JsonNetSerializer(serializer);
+            _client.AddHandler("application/json", jsonHandler);
+            _client.AddHandler("text/json", jsonHandler);
+            _client.AddHandler("text/x-json", jsonHandler);
+            _client.AddHandler("text/javascript", jsonHandler);
+            _client.AddHandler("*+json", jsonHandler);
+        }
+
 
         protected virtual IRestRequest CreateRequest(Endpoint endpoint, Method method)
         {
-            var request = new RestRequest(endpoint.Uri, method);
+            var request = new RestRequest(endpoint.Resource, method);
+            request.RequestFormat = DataFormat.Json;
+            request.JsonSerializer = _jsonNetSerializer;
             return request;
         }
 
