@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DashAPI</id>
+    <version>1.0.0</version>
+    <title>DashAPI</title>
+    <authors>Peter Åslund</authors>
+    <owners>Peter Åslund</owners>
+    <licenseUrl>https://github.com/LazyTarget/DashAPI</licenseUrl>
+    <projectUrl>https://github.com/LazyTarget/DashAPI</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/LazyTarget/DashAPI/master/NuGet/DashAPI/favicon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A client library for the Dash API's</description>
+    <summary>A client library for the Dash API's</summary>
+    <releaseNotes>https://github.com/LazyTarget/DashAPI/releases</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Dash API Library</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="7.0.1" />
+      <dependency id="OAuth2" version="0.8.40" />
+      <dependency id="RestSharp" version="105.2.3" />
+    </dependencies>
+  </metadata>
+</package>

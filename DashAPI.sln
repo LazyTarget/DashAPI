@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashAPI", "DashAPI\DashAPI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashAPI.Tests", "DashAPI.Tests\DashAPI.Tests.csproj", "{EF471585-A458-4891-92FC-D07DDB051CF4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{0984FABD-DC7F-4533-A618-050E5E179FF2}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\DashAPI\DashAPI.nuspec = NuGet\DashAPI\DashAPI.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
