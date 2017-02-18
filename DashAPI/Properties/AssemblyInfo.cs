@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("DashAPI")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("A client library for the Dash API's")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DashAPI")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
